@@ -4,19 +4,47 @@
   <title>Counsel Connect Docs</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
   <style>
     body {
       font-family: 'Inter', sans-serif;
       background: #ffffff;
-      color: #111827;
+      color: #0f172a;
       max-width: 420px;
       margin: auto;
       padding: 20px;
     }
 
-    h1 { font-size: 24px; font-weight: 600; }
-    p { color: #6b7280; }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #1e3a8a, #d4af37);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+
+    h1 {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .tagline {
+      font-style: italic;
+      color: #6b7280;
+      margin-bottom: 10px;
+    }
 
     .card {
       border: 1px solid #e5e7eb;
@@ -27,7 +55,10 @@
       transition: 0.2s;
     }
 
-    .card:hover { border-color: #1e3a8a; }
+    .card:hover {
+      border-color: #1e3a8a;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
 
     button {
       width: 100%;
@@ -38,9 +69,20 @@
       font-weight: 500;
     }
 
-    .primary { background: #1e3a8a; color: white; }
-    .secondary { background: #f3f4f6; }
-    .success { background: #16a34a; color: white; }
+    .primary {
+      background: #1e3a8a;
+      color: white;
+    }
+
+    .gold {
+      background: #d4af37;
+      color: black;
+    }
+
+    .success {
+      background: #16a34a;
+      color: white;
+    }
 
     input, textarea {
       width: 100%;
@@ -62,9 +104,15 @@
 <body>
 
 <div id="home">
-  <h1>Counsel Connect Docs</h1>
-  <p><strong>Reliability and Credibility at Your Service</strong></p>
-  <p>Create legally valid documents with professional accuracy and fast delivery.</p>
+
+  <div class="header">
+    <div class="logo">CC</div>
+    <h1>Counsel Connect</h1>
+  </div>
+
+  <div class="tagline">Where Every Document Stands on Trust</div>
+
+  <p>Create legally valid documents with professional precision and reliable delivery.</p>
 
   <div class="card" onclick="selectDoc('Affidavit')">
     <strong>Affidavit</strong><br>
@@ -73,19 +121,20 @@
 
   <div class="card" onclick="selectDoc('Rent Agreement')">
     <strong>Rent Agreement</strong><br>
-    <small>Secure and legally compliant rental contracts</small>
+    <small>Secure and compliant rental documentation</small>
   </div>
 
   <div class="card" onclick="selectDoc('Non Disclosure Agreement')">
     <strong>Non-Disclosure Agreement</strong><br>
-    <small>Protect confidential business information</small>
+    <small>Protect sensitive and confidential information</small>
   </div>
 
   <div class="trust">
-    ✔ Drafted by legal professionals<br>
-    ✔ Delivered within hours<br>
-    ✔ Trusted documentation formats
+    ✔ Trusted legal formats<br>
+    ✔ Professional drafting<br>
+    ✔ Confidential handling
   </div>
+
 </div>
 
 <div id="form" style="display:none;">
@@ -94,39 +143,39 @@
   <input id="name" placeholder="Full Name"/>
   <input id="phone" placeholder="Phone Number"/>
 
-  <textarea id="details" placeholder="Provide detailed information (e.g. purpose, names involved, property details, duration, terms, etc.)"></textarea>
+  <textarea id="details" placeholder="Provide complete and accurate details (purpose, names, terms, conditions, addresses, duration, etc.)"></textarea>
 
   <div class="trust">
-    Your information is handled with strict confidentiality and used only for document preparation.
+    Your data is handled securely and used strictly for professional document preparation.
   </div>
 
-  <button class="primary" onclick="goToPayment()">Continue</button>
+  <button class="primary" onclick="goToPayment()">Proceed</button>
 </div>
 
 <div id="payment" style="display:none;">
-  <h3>Select Service Level</h3>
+  <h3>Select Service Tier</h3>
 
   <div class="card">
     <strong>Basic - ₹99</strong><br>
-    <small>Standard draft within 24 hours</small>
+    <small>Standard document delivery</small>
   </div>
 
   <div class="card">
     <strong>Professional - ₹299</strong><br>
-    <small>Lawyer-reviewed and refined document</small>
+    <small>Lawyer-reviewed and refined</small>
   </div>
 
   <div class="card">
     <strong>Priority - ₹499</strong><br>
-    <small>Delivered within 1 hour</small>
+    <small>Fast-track delivery</small>
   </div>
 
-  <button class="primary" onclick="pay(29900)">Proceed to Secure Payment</button>
+  <button class="gold" onclick="pay(29900)">Proceed to Secure Payment</button>
 </div>
 
 <div id="success" style="display:none;">
-  <h3>✅ Your Request Has Been Received</h3>
-  <p>Our team will contact you shortly with your document.</p>
+  <h3>✅ Request Confirmed</h3>
+  <p>Our team will connect with you shortly.</p>
 
   <a id="waLink" target="_blank">
     <button class="success">Continue on WhatsApp</button>
