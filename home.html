@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Counsel Connect Docs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <style>
+    body { font-family: Arial; padding: 20px; max-width: 400px; margin: auto; }
+    button { width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 10px; }
+    .blue { background: #1e3a8a; color: white; }
+    .green { background: #16a34a; color: white; }
+    .black { background: black; color: white; }
+    input { width: 100%; padding: 10px; margin-top: 10px; }
+  </style>
+</head>
+
+<body>
+
+<h2>Counsel Connect Docs</h2>
+<p>Create Legal Documents in Minutes</p>
+
+<div id="home">
+  <button class="blue" onclick="selectDoc('Rent Agreement')">Rent Agreement</button>
+  <button class="blue" onclick="selectDoc('NDA')">NDA</button>
+  <button class="blue" onclick="selectDoc('Affidavit')">Affidavit</button>
+</div>
+
+<div id="form" style="display:none;">
+  <h3 id="docTitle"></h3>
+  <input id="name" placeholder="Your Name"/>
+  <input id="phone" placeholder="Phone Number"/>
+  <input id="details" placeholder="Enter Details"/>
+  <button class="green" onclick="goToPayment()">Continue</button>
+</div>
+
+<div id="payment" style="display:none;">
+  <h3>Choose Plan</h3>
+  <button onclick="pay(9900)">₹99 Basic</button>
+  <button onclick="pay(29900)">₹299 Standard</button>
+  <button onclick="pay(49900)">₹499 Express</button>
+</div>
+
+<div id="success" style="display:none;">
+  <h3>✅ Order Confirmed</h3>
+  <p>Click below to contact on WhatsApp</p>
+  <a id="waLink" target="_blank">
+    <button class="green">Chat on WhatsApp</button>
+  </a>
+</div>
+
+<script>
+let docType = "";
+
+function selectDoc(type){
+  docType = type;
+  document.getElementById("home").style.display = "none";
+  document.getElementById("form").style.display = "block";
+  document.getElementById("docTitle").innerText = type;
+}
+
+function goToPayment(){
+  document.getElementById("form").style.display = "none";
+  document.getElementById("payment").style.display = "block";
+}
+
+function pay(amount){
+  var options = {
+    key: "YOUR_RAZORPAY_KEY",
+    amount: amount,
+    currency: "INR",
+    name: "Counsel Connect Docs",
+    handler: function (response){
+      saveData(response.razorpay_payment_id);
+      showSuccess();
+    }
+  };
+  var rzp = new Razorpay(options);
+  rzp.open();
+}
+
+function saveData(paymentId){
+  const name = document.getElementById("name").value;
+  const phone = document.getElementById("phone").value;
+
+  console.log("SAVE THIS:", name, phone, docType, paymentId);
+}
+
+function showSuccess(){
+  document.getElementById("payment").style.display = "none";
+  document.getElementById("success").style.display = "block";
+
+  const name = document.getElementById("name").value;
+  const waText = `Hi, I ordered a ${docType}. Name: ${name}`;
+
+  document.getElementById("waLink").href =
+    "https://wa.me/91YOURNUMBER?text=" + encodeURIComponent(waText);
+}
+</script>
+
+</body>
+</html>
