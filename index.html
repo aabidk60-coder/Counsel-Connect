@@ -4,12 +4,35 @@
   <title>Counsel Connect Docs</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBoCSSJbhEFkcmWZapzRPZf9ozKDLmrRy",
+      authDomain: "counsel-connect-1dd40.firebaseapp.com",
+      projectId: "counsel-connect-1dd40",
+      storageBucket: "counsel-connect-1dd40.appspot.com",
+      messagingSenderId: "203610249780",
+      appId: "1:203610249780:web:986c26c4d0b57882d14861"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.db = db;
+    window.addDoc = addDoc;
+    window.collection = collection;
+  </script>
+
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
   <style>
     body {
       font-family: 'Inter', sans-serif;
-      background: #0b1f3a; /* Premium Navy */
+      background: #0b1f3a;
       color: #ffffff;
       max-width: 420px;
       margin: auto;
@@ -31,23 +54,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #ffffff;
+      color: white;
       font-weight: bold;
-    }
-
-    h1 {
-      font-size: 20px;
-      font-weight: 600;
     }
 
     .tagline {
       font-style: italic;
-      color: #d4af37; /* Gold */
-      margin-bottom: 10px;
-    }
-
-    p {
-      color: #cbd5e1;
+      color: #d4af37;
     }
 
     .card {
@@ -57,12 +70,6 @@
       border-radius: 16px;
       margin-top: 12px;
       cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .card:hover {
-      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-      transform: translateY(-2px);
     }
 
     button {
@@ -71,23 +78,11 @@
       margin-top: 14px;
       border-radius: 12px;
       border: none;
-      font-weight: 500;
     }
 
-    .primary {
-      background: #1e3a8a;
-      color: white;
-    }
-
-    .gold {
-      background: #d4af37;
-      color: black;
-    }
-
-    .success {
-      background: #16a34a;
-      color: white;
-    }
+    .primary { background: #1e3a8a; color: white; }
+    .gold { background: #d4af37; color: black; }
+    .success { background: #16a34a; color: white; }
 
     input, textarea {
       width: 100%;
@@ -102,14 +97,12 @@
       margin-top: 10px;
       color: #cbd5e1;
     }
-
   </style>
 </head>
 
 <body>
 
 <div id="home">
-
   <div class="header">
     <div class="logo">CC</div>
     <h1>Counsel Connect</h1>
@@ -117,29 +110,9 @@
 
   <div class="tagline">Where Every Document Stands on Trust</div>
 
-  <p>Create legally valid documents with professional precision and reliable delivery.</p>
-
-  <div class="card" onclick="selectDoc('Affidavit')">
-    <strong>Affidavit</strong><br>
-    <small>Legally binding declaration for official purposes</small>
-  </div>
-
-  <div class="card" onclick="selectDoc('Rent Agreement')">
-    <strong>Rent Agreement</strong><br>
-    <small>Secure and compliant rental documentation</small>
-  </div>
-
-  <div class="card" onclick="selectDoc('Non Disclosure Agreement')">
-    <strong>Non-Disclosure Agreement</strong><br>
-    <small>Protect sensitive and confidential information</small>
-  </div>
-
-  <div class="trust">
-    ✔ Trusted legal formats<br>
-    ✔ Professional drafting<br>
-    ✔ Confidential handling
-  </div>
-
+  <div class="card" onclick="selectDoc('Affidavit')">Affidavit</div>
+  <div class="card" onclick="selectDoc('Rent Agreement')">Rent Agreement</div>
+  <div class="card" onclick="selectDoc('Non Disclosure Agreement')">Non-Disclosure Agreement</div>
 </div>
 
 <div id="form" style="display:none;">
@@ -147,43 +120,25 @@
 
   <input id="name" placeholder="Full Name"/>
   <input id="phone" placeholder="Phone Number"/>
+  <input id="parent" placeholder="Father/Mother Name"/>
+  <input id="address" placeholder="Full Address"/>
+  <input id="idproof" placeholder="ID Proof"/>
+  <input id="purpose" placeholder="Purpose of Document"/>
+  <input id="otherparty" placeholder="Other Party (if any)"/>
 
-  <textarea id="details" placeholder="Provide complete and accurate details (purpose, names, terms, conditions, addresses, duration, etc.)"></textarea>
-
-  <div class="trust">
-    Your data is handled securely and used strictly for professional document preparation.
-  </div>
+  <textarea id="additional" placeholder="Additional Details (optional)"></textarea>
 
   <button class="primary" onclick="goToPayment()">Proceed</button>
 </div>
 
 <div id="payment" style="display:none;">
-  <h3>Select Service Tier</h3>
-
-  <div class="card">
-    <strong>Basic - ₹99</strong><br>
-    <small>Standard document delivery</small>
-  </div>
-
-  <div class="card">
-    <strong>Professional - ₹299</strong><br>
-    <small>Lawyer-reviewed and refined</small>
-  </div>
-
-  <div class="card">
-    <strong>Priority - ₹499</strong><br>
-    <small>Fast-track delivery</small>
-  </div>
-
-  <button class="gold" onclick="pay(29900)">Proceed to Secure Payment</button>
+  <button class="gold" onclick="pay(29900)">Pay ₹299</button>
 </div>
 
 <div id="success" style="display:none;">
-  <h3>✅ Request Confirmed</h3>
-  <p>Our team will connect with you shortly.</p>
-
+  <h3>✅ Done</h3>
   <a id="waLink" target="_blank">
-    <button class="success">Continue on WhatsApp</button>
+    <button class="success">WhatsApp</button>
   </a>
 </div>
 
@@ -208,24 +163,37 @@ function pay(amount){
     amount: amount,
     currency: "INR",
     name: "Counsel Connect Docs",
-    description: "Legal Documentation Service",
-    handler: function (response){
-      showSuccess();
+    handler: function (){
+      saveData();
     }
   };
-  var rzp = new Razorpay(options);
-  rzp.open();
+  new Razorpay(options).open();
 }
 
-function showSuccess(){
-  document.getElementById("payment").style.display = "none";
-  document.getElementById("success").style.display = "block";
+function saveData(){
 
-  const name = document.getElementById("name").value;
-  const waText = `Hello, I have requested a ${docType}. Name: ${name}`;
+  const data = {
+    name: document.getElementById("name").value,
+    phone: document.getElementById("phone").value,
+    parent: document.getElementById("parent").value,
+    address: document.getElementById("address").value,
+    idproof: document.getElementById("idproof").value,
+    purpose: document.getElementById("purpose").value,
+    otherparty: document.getElementById("otherparty").value,
+    additional: document.getElementById("additional").value,
+    document: docType,
+    createdAt: new Date()
+  };
 
-  document.getElementById("waLink").href =
-    "https://wa.me/91YOURNUMBER?text=" + encodeURIComponent(waText);
+  addDoc(collection(window.db, "orders"), data)
+    .then(() => {
+      document.getElementById("payment").style.display = "none";
+      document.getElementById("success").style.display = "block";
+
+      document.getElementById("waLink").href =
+        "https://wa.me/91YOURNUMBER?text=" + encodeURIComponent(`Order for ${docType}`);
+    })
+    .catch(err => alert(err));
 }
 </script>
 
