@@ -7,6 +7,9 @@
   <!-- Razorpay -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
   <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -102,7 +105,6 @@
   <input id="purpose" placeholder="Purpose"/>
   <textarea id="additional" placeholder="Additional Details"></textarea>
 
-  <!-- PRICING -->
   <h3>Select Speed</h3>
 
   <div class="card" onclick="selectPlan('Free')">Free - 24 hrs</div>
@@ -121,7 +123,7 @@
 </div>
 
 <div id="success" style="display:none;">
-  <h3>✅ Request Received</h3>
+  <h3 id="successMsg">✅ Request Received</h3>
   <button onclick="openWhatsApp()">Continue on WhatsApp</button>
 </div>
 
@@ -147,6 +149,27 @@ function selectPlan(p){
   alert("Selected: " + p);
 }
 
+// 🔥 CLASSIFICATION ENGINE
+function classifyRequest(data){
+
+  if(plan === "Express") return "MANUAL";
+
+  if(data.additional.length > 120) return "MANUAL";
+
+  if(data.document === "Personalised Affidavit") return "MANUAL";
+
+  if(
+    data.document === "Address Proof Affidavit" ||
+    data.document === "Gap Year Affidavit" ||
+    data.document === "Income Affidavit"
+  ){
+    return "AUTO";
+  }
+
+  return "MANUAL";
+}
+
+// 🔥 PAYMENT
 function proceedPayment(){
 
   if(plan === "Free"){
@@ -171,6 +194,27 @@ function proceedPayment(){
   new Razorpay(options).open();
 }
 
+// 🔥 PDF GENERATION
+function generatePDF(data){
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  let content = `
+AFFIDAVIT
+
+I, ${data.name}, child of ${data.parent}, residing at ${data.address}, do hereby solemnly affirm:
+
+This affidavit is made for ${data.purpose}.
+
+Signature:
+`;
+
+  doc.text(content, 10, 10);
+  doc.save("CounselConnect_Affidavit.pdf");
+}
+
+// 🔥 SAVE DATA + AUTOMATION
 function saveData(status){
 
   const data = {
@@ -187,14 +231,29 @@ function saveData(status){
     createdAt: new Date()
   };
 
-  addDoc(collection(window.db, "orders"), data)
-    .then(() => {
-      step2.style.display = "none";
-      success.style.display = "block";
-    });
+  const type = classifyRequest(data);
+
+  addDoc(collection(window.db, "orders"), {
+    ...data,
+    processingType: type
+  })
+  .then(() => {
+
+    if(type === "AUTO"){
+      generatePDF(data);
+      successMsg.innerText = "✅ Your affidavit is ready!";
+    } else {
+      successMsg.innerText = "✅ Our legal team will prepare your affidavit shortly.";
+    }
+
+    step2.style.display = "none";
+    success.style.display = "block";
+  });
 }
 
+// 🔥 WHATSAPP
 function openWhatsApp(){
+
   const num = numbers[Math.floor(Math.random()*numbers.length)];
 
   const message = `New Order:
