@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Counsel Connect Docs</title>
+  <title>Counsel Connect - Affidavits</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
   <!-- Firebase -->
@@ -31,9 +31,32 @@
       font-family: Arial;
       background: #0b1f3a;
       color: white;
-      max-width: 420px;
+      max-width: 480px;
       margin: auto;
       padding: 20px;
+    }
+
+    h1 { font-size: 26px; margin-bottom: 5px; }
+    h2 { margin-top: 20px; }
+
+    .tagline {
+      color: #d4af37;
+      font-style: italic;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      color: black;
+      padding: 14px;
+      border-radius: 12px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    .desc {
+      font-size: 13px;
+      color: #374151;
     }
 
     button {
@@ -54,17 +77,51 @@
       border-radius: 10px;
       border: none;
     }
+
+    .trust {
+      font-size: 12px;
+      margin-top: 15px;
+      color: #cbd5e1;
+    }
   </style>
 </head>
 
 <body>
 
 <div id="home">
-  <h2>Counsel Connect</h2>
+  <h1>Counsel Connect</h1>
+  <div class="tagline">We draft your affidavit. You just print & notarize.</div>
 
-  <button onclick="selectDoc('Affidavit')">Affidavit</button>
-  <button onclick="selectDoc('Rent Agreement')">Rent Agreement</button>
-  <button onclick="selectDoc('Non Disclosure Agreement')">Non-Disclosure Agreement</button>
+  <p style="font-size:13px;">Drafted by legal professionals for accuracy, clarity and reliability.</p>
+
+  <div class="card" onclick="selectDoc('Address Proof Affidavit')">
+    Address Proof Affidavit
+    <div class="desc">For address verification in banks, colleges, or official documents.</div>
+  </div>
+
+  <div class="card" onclick="selectDoc('Name Correction Affidavit')">
+    Name Correction Affidavit
+    <div class="desc">For correcting spelling or name mismatch in official records.</div>
+  </div>
+
+  <div class="card" onclick="selectDoc('Gap Year Affidavit')">
+    Gap Year Affidavit
+    <div class="desc">For explaining academic or career gaps for jobs or admissions.</div>
+  </div>
+
+  <div class="card" onclick="selectDoc('Income Affidavit')">
+    Income Affidavit
+    <div class="desc">For scholarships, financial proof, or official declarations.</div>
+  </div>
+
+  <div class="card" onclick="selectDoc('Personalised Affidavit')">
+    Personalised Affidavit
+    <div class="desc">Custom affidavit for your specific requirement.</div>
+  </div>
+
+  <div class="trust">
+    We provide drafting assistance only. Not a law firm. Final notarization to be done by the user.
+  </div>
 </div>
 
 <div id="form" style="display:none;">
@@ -75,16 +132,19 @@
   <input id="parent" placeholder="Father/Mother Name"/>
   <input id="address" placeholder="Full Address"/>
   <input id="idproof" placeholder="ID Proof"/>
-  <input id="purpose" placeholder="Purpose"/>
-  <input id="otherparty" placeholder="Other Party"/>
+  <input id="purpose" placeholder="Purpose of Affidavit"/>
 
   <textarea id="additional" placeholder="Additional Details"></textarea>
 
   <button class="primary" onclick="saveData()">Submit</button>
+
+  <div class="trust">
+    Your data is handled securely and used only for drafting your document.
+  </div>
 </div>
 
 <div id="success" style="display:none;">
-  <h3>✅ Your request has been successfully submitted</h3>
+  <h3>✅ Request Submitted</h3>
   <p>Our team will contact you shortly.</p>
 
   <button class="success" onclick="openWhatsApp()">Continue on WhatsApp</button>
@@ -93,7 +153,6 @@
 <script>
 let docType = "";
 
-// 🔥 Two WhatsApp numbers
 const numbers = ["919599413556", "919873299521"];
 
 function selectDoc(type){
@@ -104,7 +163,6 @@ function selectDoc(type){
 }
 
 function saveData(){
-
   const data = {
     name: document.getElementById("name").value,
     phone: document.getElementById("phone").value,
@@ -112,7 +170,6 @@ function saveData(){
     address: document.getElementById("address").value,
     idproof: document.getElementById("idproof").value,
     purpose: document.getElementById("purpose").value,
-    otherparty: document.getElementById("otherparty").value,
     additional: document.getElementById("additional").value,
     document: docType,
     createdAt: new Date()
@@ -120,26 +177,18 @@ function saveData(){
 
   addDoc(collection(window.db, "orders"), data)
     .then(() => {
-      console.log("✅ Data saved to Firebase");
-      alert("Your details have been submitted successfully!");
-
+      alert("Submitted successfully!");
       document.getElementById("form").style.display = "none";
       document.getElementById("success").style.display = "block";
     })
-    .catch((error) => {
-      console.error(error);
-      alert("Error saving data");
-    });
+    .catch(err => alert(err));
 }
 
-// 🔥 WhatsApp logic (random assignment)
 function openWhatsApp(){
-
   const selectedNumber = numbers[Math.floor(Math.random() * numbers.length)];
-
   const name = document.getElementById("name").value;
 
-  const message = `Hello, I have submitted a request for ${docType}. Name: ${name}`;
+  const message = `Hello, I need ${docType}. Name: ${name}`;
 
   window.open(`https://wa.me/${selectedNumber}?text=${encodeURIComponent(message)}`);
 }
