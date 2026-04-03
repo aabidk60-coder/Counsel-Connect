@@ -4,6 +4,10 @@
   <title>Counsel Connect - Affidavits</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
+  <!-- Razorpay -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+  <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -35,19 +39,7 @@
       padding: 20px;
     }
 
-    h1 { font-size: 26px; }
-
-    .tagline {
-      color: #d4af37;
-      font-style: italic;
-      margin-bottom: 10px;
-    }
-
-    .trust-badges {
-      font-size: 12px;
-      color: #cbd5e1;
-      margin-bottom: 15px;
-    }
+    .tagline { color: #d4af37; font-style: italic; }
 
     .card {
       background: white;
@@ -56,11 +48,6 @@
       border-radius: 12px;
       margin-top: 10px;
       cursor: pointer;
-    }
-
-    .desc {
-      font-size: 13px;
-      color: #374151;
     }
 
     button {
@@ -72,7 +59,7 @@
     }
 
     .primary { background: #1e3a8a; color: white; }
-    .success { background: #16a34a; color: white; }
+    .highlight { border: 2px solid gold; }
 
     input, textarea {
       width: 100%;
@@ -82,140 +69,140 @@
       border: none;
     }
 
-    .section {
-      margin-top: 20px;
-      font-size: 13px;
-      color: #cbd5e1;
-    }
+    .small { font-size: 12px; color: #cbd5e1; }
   </style>
 </head>
 
 <body>
 
-<!-- HOME -->
 <div id="home">
   <h1>Counsel Connect</h1>
   <div class="tagline">Get your affidavit drafted in 30 minutes</div>
 
-  <div class="trust-badges">
-    ✔ Trusted by users  
-    ✔ Drafted by legal professionals  
-    ✔ Simple & fast process
-  </div>
-
-  <!-- Services -->
-  <div class="card" onclick="selectDoc('Address Proof Affidavit')">
-    Address Proof Affidavit
-    <div class="desc">For banks, colleges, KYC verification.</div>
-  </div>
-
-  <div class="card" onclick="selectDoc('Name Correction Affidavit')">
-    Name Correction Affidavit
-    <div class="desc">Fix spelling/name mismatch issues.</div>
-  </div>
-
-  <div class="card" onclick="selectDoc('Gap Year Affidavit')">
-    Gap Year Affidavit
-    <div class="desc">Explain academic or career gaps.</div>
-  </div>
-
-  <div class="card" onclick="selectDoc('Income Affidavit')">
-    Income Affidavit
-    <div class="desc">For scholarships and financial proof.</div>
-  </div>
-
-  <div class="card" onclick="selectDoc('Personalised Affidavit')">
-    Personalised Affidavit
-    <div class="desc">Custom affidavit for your need.</div>
-  </div>
-
-  <!-- How it works -->
-  <div class="section">
-    <b>How it works:</b><br>
-    1. Fill details<br>
-    2. We draft affidavit<br>
-    3. Receive on WhatsApp<br>
-    4. Print & notarize
-  </div>
+  <div class="card" onclick="selectDoc('Address Proof Affidavit')">Address Proof Affidavit</div>
+  <div class="card" onclick="selectDoc('Name Correction Affidavit')">Name Correction Affidavit</div>
+  <div class="card" onclick="selectDoc('Gap Year Affidavit')">Gap Year Affidavit</div>
+  <div class="card" onclick="selectDoc('Income Affidavit')">Income Affidavit</div>
+  <div class="card" onclick="selectDoc('Personalised Affidavit')">Personalised Affidavit</div>
 </div>
 
-<!-- STEP 1 -->
 <div id="step1" style="display:none;">
   <h2 id="docTitle"></h2>
-
   <input id="name" placeholder="Full Name"/>
   <input id="phone" placeholder="Phone Number"/>
-
   <button class="primary" onclick="nextStep()">Continue</button>
 </div>
 
-<!-- STEP 2 -->
 <div id="step2" style="display:none;">
   <h2>Complete Details</h2>
 
   <input id="parent" placeholder="Father/Mother Name"/>
   <input id="address" placeholder="Full Address"/>
   <input id="idproof" placeholder="ID Proof"/>
-  <input id="purpose" placeholder="Purpose of Affidavit"/>
-
+  <input id="purpose" placeholder="Purpose"/>
   <textarea id="additional" placeholder="Additional Details"></textarea>
 
-  <button class="primary" onclick="saveData()">Get My Draft Now</button>
+  <!-- PRICING -->
+  <h3>Select Speed</h3>
+
+  <div class="card" onclick="selectPlan('Free')">Free - 24 hrs</div>
+
+  <div class="card highlight" onclick="selectPlan('Fast')">
+    ₹99 - 2 hrs ⭐ Recommended
+  </div>
+
+  <div class="card" onclick="selectPlan('Express')">
+    ₹199 - 30 mins
+  </div>
+
+  <p class="small">Limited fast processing slots available today</p>
+
+  <button class="primary" onclick="proceedPayment()">Continue</button>
 </div>
 
-<!-- SUCCESS -->
 <div id="success" style="display:none;">
   <h3>✅ Request Received</h3>
-  <p>Your draft will be prepared shortly.</p>
-
-  <button class="success" onclick="openWhatsApp()">Continue on WhatsApp (Faster)</button>
+  <button onclick="openWhatsApp()">Continue on WhatsApp</button>
 </div>
 
 <script>
 let docType = "";
+let plan = "Free";
 const numbers = ["919599413556", "919873299521"];
 
 function selectDoc(type){
   docType = type;
-  document.getElementById("home").style.display = "none";
-  document.getElementById("step1").style.display = "block";
-  document.getElementById("docTitle").innerText = type;
+  home.style.display = "none";
+  step1.style.display = "block";
+  docTitle.innerText = type;
 }
 
 function nextStep(){
-  document.getElementById("step1").style.display = "none";
-  document.getElementById("step2").style.display = "block";
+  step1.style.display = "none";
+  step2.style.display = "block";
 }
 
-function saveData(){
+function selectPlan(p){
+  plan = p;
+  alert("Selected: " + p);
+}
+
+function proceedPayment(){
+
+  if(plan === "Free"){
+    saveData("Free");
+    return;
+  }
+
+  let amount = plan === "Fast" ? 9900 : 19900;
+
+  var options = {
+    key: "YOUR_RAZORPAY_KEY",
+    amount: amount,
+    currency: "INR",
+    name: "Counsel Connect",
+    description: plan,
+
+    handler: function (){
+      saveData("Paid");
+    }
+  };
+
+  new Razorpay(options).open();
+}
+
+function saveData(status){
+
   const data = {
-    name: document.getElementById("name").value,
-    phone: document.getElementById("phone").value,
-    parent: document.getElementById("parent").value,
-    address: document.getElementById("address").value,
-    idproof: document.getElementById("idproof").value,
-    purpose: document.getElementById("purpose").value,
-    additional: document.getElementById("additional").value,
+    name: name.value,
+    phone: phone.value,
+    parent: parent.value,
+    address: address.value,
+    idproof: idproof.value,
+    purpose: purpose.value,
+    additional: additional.value,
     document: docType,
+    plan: plan,
+    paymentStatus: status,
     createdAt: new Date()
   };
 
   addDoc(collection(window.db, "orders"), data)
     .then(() => {
-      alert("Submitted successfully!");
-      document.getElementById("step2").style.display = "none";
-      document.getElementById("success").style.display = "block";
-    })
-    .catch(err => alert(err));
+      step2.style.display = "none";
+      success.style.display = "block";
+    });
 }
 
 function openWhatsApp(){
-  const selectedNumber = numbers[Math.floor(Math.random() * numbers.length)];
-  const name = document.getElementById("name").value;
+  const num = numbers[Math.floor(Math.random()*numbers.length)];
 
-  const message = `Hello, I need ${docType}. Name: ${name}`;
+  const message = `New Order:
+Name: ${name.value}
+Document: ${docType}
+Plan: ${plan}`;
 
-  window.open(`https://wa.me/${selectedNumber}?text=${encodeURIComponent(message)}`);
+  window.open(`https://wa.me/${num}?text=${encodeURIComponent(message)}`);
 }
 </script>
 
