@@ -4,7 +4,6 @@
   <title>Counsel Connect - Affidavits</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-  <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -36,13 +35,18 @@
       padding: 20px;
     }
 
-    h1 { font-size: 26px; margin-bottom: 5px; }
-    h2 { margin-top: 20px; }
+    h1 { font-size: 26px; }
 
     .tagline {
       color: #d4af37;
       font-style: italic;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
+    }
+
+    .trust-badges {
+      font-size: 12px;
+      color: #cbd5e1;
+      margin-bottom: 15px;
     }
 
     .card {
@@ -78,9 +82,9 @@
       border: none;
     }
 
-    .trust {
-      font-size: 12px;
-      margin-top: 15px;
+    .section {
+      margin-top: 20px;
+      font-size: 13px;
       color: #cbd5e1;
     }
   </style>
@@ -88,47 +92,67 @@
 
 <body>
 
+<!-- HOME -->
 <div id="home">
   <h1>Counsel Connect</h1>
-  <div class="tagline">We draft your affidavit. You just print & notarize.</div>
+  <div class="tagline">Get your affidavit drafted in 30 minutes</div>
 
-  <p style="font-size:13px;">Drafted by legal professionals for accuracy, clarity and reliability.</p>
+  <div class="trust-badges">
+    ✔ Trusted by users  
+    ✔ Drafted by legal professionals  
+    ✔ Simple & fast process
+  </div>
 
+  <!-- Services -->
   <div class="card" onclick="selectDoc('Address Proof Affidavit')">
     Address Proof Affidavit
-    <div class="desc">For address verification in banks, colleges, or official documents.</div>
+    <div class="desc">For banks, colleges, KYC verification.</div>
   </div>
 
   <div class="card" onclick="selectDoc('Name Correction Affidavit')">
     Name Correction Affidavit
-    <div class="desc">For correcting spelling or name mismatch in official records.</div>
+    <div class="desc">Fix spelling/name mismatch issues.</div>
   </div>
 
   <div class="card" onclick="selectDoc('Gap Year Affidavit')">
     Gap Year Affidavit
-    <div class="desc">For explaining academic or career gaps for jobs or admissions.</div>
+    <div class="desc">Explain academic or career gaps.</div>
   </div>
 
   <div class="card" onclick="selectDoc('Income Affidavit')">
     Income Affidavit
-    <div class="desc">For scholarships, financial proof, or official declarations.</div>
+    <div class="desc">For scholarships and financial proof.</div>
   </div>
 
   <div class="card" onclick="selectDoc('Personalised Affidavit')">
     Personalised Affidavit
-    <div class="desc">Custom affidavit for your specific requirement.</div>
+    <div class="desc">Custom affidavit for your need.</div>
   </div>
 
-  <div class="trust">
-    We provide drafting assistance only. Not a law firm. Final notarization to be done by the user.
+  <!-- How it works -->
+  <div class="section">
+    <b>How it works:</b><br>
+    1. Fill details<br>
+    2. We draft affidavit<br>
+    3. Receive on WhatsApp<br>
+    4. Print & notarize
   </div>
 </div>
 
-<div id="form" style="display:none;">
+<!-- STEP 1 -->
+<div id="step1" style="display:none;">
   <h2 id="docTitle"></h2>
 
   <input id="name" placeholder="Full Name"/>
   <input id="phone" placeholder="Phone Number"/>
+
+  <button class="primary" onclick="nextStep()">Continue</button>
+</div>
+
+<!-- STEP 2 -->
+<div id="step2" style="display:none;">
+  <h2>Complete Details</h2>
+
   <input id="parent" placeholder="Father/Mother Name"/>
   <input id="address" placeholder="Full Address"/>
   <input id="idproof" placeholder="ID Proof"/>
@@ -136,30 +160,31 @@
 
   <textarea id="additional" placeholder="Additional Details"></textarea>
 
-  <button class="primary" onclick="saveData()">Submit</button>
-
-  <div class="trust">
-    Your data is handled securely and used only for drafting your document.
-  </div>
+  <button class="primary" onclick="saveData()">Get My Draft Now</button>
 </div>
 
+<!-- SUCCESS -->
 <div id="success" style="display:none;">
-  <h3>✅ Request Submitted</h3>
-  <p>Our team will contact you shortly.</p>
+  <h3>✅ Request Received</h3>
+  <p>Your draft will be prepared shortly.</p>
 
-  <button class="success" onclick="openWhatsApp()">Continue on WhatsApp</button>
+  <button class="success" onclick="openWhatsApp()">Continue on WhatsApp (Faster)</button>
 </div>
 
 <script>
 let docType = "";
-
 const numbers = ["919599413556", "919873299521"];
 
 function selectDoc(type){
   docType = type;
   document.getElementById("home").style.display = "none";
-  document.getElementById("form").style.display = "block";
+  document.getElementById("step1").style.display = "block";
   document.getElementById("docTitle").innerText = type;
+}
+
+function nextStep(){
+  document.getElementById("step1").style.display = "none";
+  document.getElementById("step2").style.display = "block";
 }
 
 function saveData(){
@@ -178,7 +203,7 @@ function saveData(){
   addDoc(collection(window.db, "orders"), data)
     .then(() => {
       alert("Submitted successfully!");
-      document.getElementById("form").style.display = "none";
+      document.getElementById("step2").style.display = "none";
       document.getElementById("success").style.display = "block";
     })
     .catch(err => alert(err));
