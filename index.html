@@ -692,6 +692,19 @@
     let plan = "Fast";
     const numbers = ["919599413556", "919873299521"];
     const planIds = ["Free", "Fast", "Express"];
+    const homeSection = document.getElementById("home");
+    const stepOneSection = document.getElementById("step1");
+    const stepTwoSection = document.getElementById("step2");
+    const successSection = document.getElementById("success");
+    const docTitleEl = document.getElementById("docTitle");
+    const successMsgEl = document.getElementById("successMsg");
+    const nameInput = document.getElementById("name");
+    const phoneInput = document.getElementById("phone");
+    const parentInput = document.getElementById("parent");
+    const addressInput = document.getElementById("address");
+    const idProofInput = document.getElementById("idproof");
+    const purposeInput = document.getElementById("purpose");
+    const additionalInput = document.getElementById("additional");
 
     function setSelectedCard(selector, value, attributeName) {
       document.querySelectorAll(selector).forEach((card) => {
@@ -701,20 +714,20 @@
     }
 
     function goHome() {
-      step1.style.display = "none";
-      step2.style.display = "none";
-      success.style.display = "none";
-      home.style.display = "block";
+      stepOneSection.style.display = "none";
+      stepTwoSection.style.display = "none";
+      successSection.style.display = "none";
+      homeSection.style.display = "block";
     }
 
     function selectDoc(type) {
       docType = type;
       setSelectedCard(".card[data-doc]", type, "data-doc");
-      home.style.display = "none";
-      step1.style.display = "block";
-      step2.style.display = "none";
-      success.style.display = "none";
-      docTitle.innerText = type;
+      homeSection.style.display = "none";
+      stepOneSection.style.display = "block";
+      stepTwoSection.style.display = "none";
+      successSection.style.display = "none";
+      docTitleEl.innerText = type;
     }
 
     function nextStep() {
@@ -722,8 +735,8 @@
         return;
       }
 
-      step1.style.display = "none";
-      step2.style.display = "block";
+      stepOneSection.style.display = "none";
+      stepTwoSection.style.display = "block";
       selectPlan(plan);
     }
 
@@ -755,7 +768,7 @@
     }
 
     function validateStepOne() {
-      if (!name.value.trim() || !phone.value.trim()) {
+      if (!nameInput.value.trim() || !phoneInput.value.trim()) {
         alert("Please enter your full name and phone number.");
         return false;
       }
@@ -764,7 +777,7 @@
     }
 
     function validateStepTwo() {
-      if (!parent.value.trim() || !address.value.trim() || !idproof.value.trim() || !purpose.value.trim()) {
+      if (!parentInput.value.trim() || !addressInput.value.trim() || !idProofInput.value.trim() || !purposeInput.value.trim()) {
         alert("Please complete all required affidavit details before continuing.");
         return false;
       }
@@ -818,13 +831,13 @@ Signature:
 
     function saveData(status) {
       const data = {
-        name: name.value,
-        phone: phone.value,
-        parent: parent.value,
-        address: address.value,
-        idproof: idproof.value,
-        purpose: purpose.value,
-        additional: additional.value,
+        name: nameInput.value,
+        phone: phoneInput.value,
+        parent: parentInput.value,
+        address: addressInput.value,
+        idproof: idProofInput.value,
+        purpose: purposeInput.value,
+        additional: additionalInput.value,
         document: docType,
         plan: plan,
         paymentStatus: status,
@@ -839,13 +852,13 @@ Signature:
       }).then(() => {
         if (type === "AUTO") {
           generatePDF(data);
-          successMsg.innerText = "Your affidavit draft is ready!";
+          successMsgEl.innerText = "Your affidavit draft is ready!";
         } else {
-          successMsg.innerText = "Our legal team will prepare your affidavit shortly.";
+          successMsgEl.innerText = "Our legal team will prepare your affidavit shortly.";
         }
 
-        step2.style.display = "none";
-        success.style.display = "block";
+        stepTwoSection.style.display = "none";
+        successSection.style.display = "block";
       });
     }
 
@@ -853,7 +866,7 @@ Signature:
       const num = numbers[Math.floor(Math.random() * numbers.length)];
 
       const message = `New Order:
-Name: ${name.value}
+Name: ${nameInput.value}
 Document: ${docType}
 Plan: ${plan}`;
 
