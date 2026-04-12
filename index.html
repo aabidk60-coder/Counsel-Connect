@@ -3,18 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Counsel Connect - Affidavits</title>
+  <title>Counsel Connect Privacy - DPDP Compliance for MSMEs</title>
 
-  <!-- Razorpay -->
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
-  <!-- jsPDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-  <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBoCSSJbhEFkcmWZapzRPZf9ozKDLmrRy",
@@ -31,966 +24,819 @@
     window.db = db;
     window.addDoc = addDoc;
     window.collection = collection;
+    window.serverTimestamp = serverTimestamp;
   </script>
 
   <style>
     :root {
-      --surface: #ffffff;
-      --surface-soft: #eef4ff;
-      --text: #09111f;
-      --text-muted: #5b677c;
-      --text-light: #c7d2e5;
-      --primary: #1d4ed8;
-      --primary-dark: #173ea6;
-      --primary-strong: #0f4ec9;
-      --gold: #f4b740;
-      --gold-soft: #fff4d8;
-      --success: #0f9f6e;
-      --shadow: 0 18px 40px rgba(3, 15, 36, 0.22);
-      --radius-lg: 20px;
-      --radius-md: 14px;
+      --ink: #112033;
+      --ink-soft: #576579;
+      --bg: #f7f4ed;
+      --panel: rgba(255, 255, 255, 0.82);
+      --panel-strong: #ffffff;
+      --navy: #17314f;
+      --navy-deep: #0e2036;
+      --sand: #ead8b4;
+      --gold: #c89439;
+      --gold-deep: #8f6420;
+      --blue: #1565d8;
+      --blue-soft: #e8f1ff;
+      --green: #167b5d;
+      --green-soft: #e6f6ef;
+      --red-soft: #fff1ef;
+      --border: rgba(17, 32, 51, 0.12);
+      --shadow: 0 24px 60px rgba(17, 32, 51, 0.12);
+      --radius-xl: 30px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
 
     body {
       margin: 0;
-      font-family: "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
       background:
-        radial-gradient(circle at top, rgba(244, 183, 64, 0.18), transparent 28%),
-        linear-gradient(180deg, #09162b 0%, #071224 48%, #050d1a 100%);
-      color: white;
-      min-height: 100vh;
+        radial-gradient(circle at top left, rgba(200, 148, 57, 0.12), transparent 28%),
+        radial-gradient(circle at top right, rgba(21, 101, 216, 0.1), transparent 22%),
+        linear-gradient(180deg, #f8f3ea 0%, #f7f4ed 52%, #f3efe6 100%);
+      font-family: Georgia, "Times New Roman", serif;
     }
 
-    .app-shell {
-      width: min(100%, 520px);
+    a { color: inherit; text-decoration: none; }
+
+    .shell {
+      width: min(1180px, calc(100% - 32px));
       margin: 0 auto;
-      padding: 20px 16px 32px;
+      padding: 22px 0 40px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 18px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 12px 30px rgba(17, 32, 51, 0.06);
+      position: sticky;
+      top: 16px;
+      z-index: 10;
+    }
+
+    .brand,
+    .nav-links,
+    .hero-actions,
+    .badge-row,
+    .field-grid,
+    .section-head,
+    .consent-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .brand { align-items: center; }
+    .nav-links { gap: 18px; flex-wrap: wrap; align-items: center; }
+    .hero-actions, .badge-row { flex-wrap: wrap; }
+    .field-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .section-head { justify-content: space-between; align-items: end; margin-bottom: 20px; }
+    .consent-row { align-items: flex-start; margin-top: 16px; }
+
+    .brand,
+    .brand-copy strong,
+    .brand-copy span,
+    .nav-links a,
+    .eyebrow,
+    .badge,
+    .primary-btn,
+    .secondary-btn,
+    .ghost-btn,
+    .link-button,
+    .plan-chip,
+    label,
+    input,
+    textarea,
+    select,
+    .mini-note,
+    .success-note,
+    .cta-strip,
+    .disclaimer-box,
+    .faq-item p,
+    .deliverable li,
+    .hero-stat span,
+    .kpi-card span,
+    .service-card span,
+    .risk-card span,
+    .proof-card span,
+    .promise-card span,
+    .footnote,
+    .assessment-label,
+    .price-caption {
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--navy), #244a78);
+      color: white;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    .brand-copy strong { display: block; font-size: 15px; }
+    .brand-copy span { display: block; font-size: 12px; color: var(--ink-soft); }
+    .nav-links a { color: var(--ink-soft); font-size: 14px; font-weight: 600; }
+
+    .nav-cta,
+    .primary-btn,
+    .secondary-btn,
+    .ghost-btn,
+    .link-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      font-weight: 700;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+      cursor: pointer;
+      border: none;
+    }
+
+    .nav-cta {
+      padding: 12px 18px;
+      background: var(--navy);
+      color: white;
+      font-size: 14px;
     }
 
     .hero,
-    .panel {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 28px;
-      padding: 22px 18px;
-      backdrop-filter: blur(10px);
+    .footer-panel,
+    .kpi-grid,
+    .proof-grid,
+    .promise-grid,
+    .service-grid,
+    .risk-grid,
+    .pricing-grid,
+    .faq-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .hero {
+      grid-template-columns: 1.1fr 0.9fr;
+      margin-top: 24px;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .hero-copy,
+    .hero-form,
+    .section-panel,
+    .assessment-card,
+    .service-card,
+    .risk-card,
+    .proof-card,
+    .promise-card,
+    .kpi-card,
+    .pricing-card,
+    .faq-item,
+    .footer-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(14px);
       box-shadow: var(--shadow);
     }
 
-    .eyebrow {
+    .hero-copy,
+    .hero-form,
+    .section-panel,
+    .footer-panel { border-radius: var(--radius-xl); }
+
+    .hero-copy { padding: 34px 34px 30px; background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(255,251,242,0.92)); }
+    .hero-form { padding: 26px; background: linear-gradient(180deg, rgba(23,49,79,0.96), rgba(14,32,54,0.98)); color: white; }
+
+    .eyebrow,
+    .badge,
+    .plan-chip {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 7px 12px;
+      padding: 8px 12px;
       border-radius: 999px;
-      background: rgba(244, 183, 64, 0.12);
-      border: 1px solid rgba(244, 183, 64, 0.28);
-      color: #ffe08a;
       font-size: 12px;
       font-weight: 700;
+    }
+
+    .eyebrow {
+      background: rgba(200, 148, 57, 0.14);
+      color: var(--gold-deep);
       letter-spacing: 0.04em;
       text-transform: uppercase;
     }
 
-    h1,
-    h2,
-    h3 {
-      margin: 0;
-    }
-
-    h1 {
-      margin-top: 16px;
-      font-size: 34px;
-      line-height: 1.05;
-      letter-spacing: -0.03em;
-    }
-
-    h2 {
-      font-size: 26px;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-    }
-
-    h3 {
-      font-size: 18px;
-      color: white;
-    }
-
-    .lead {
-      margin: 12px 0 0;
-      color: var(--text-light);
-      font-size: 15px;
-      line-height: 1.6;
-    }
-
-    .hero-points,
-    .trust-grid,
-    .plan-benefits {
-      display: grid;
-      gap: 10px;
-      margin-top: 18px;
-    }
-
-    .hero-points {
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    .mini-stat,
-    .trust-item {
-      padding: 14px;
-      border-radius: 16px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.09);
-    }
-
-    .mini-stat strong,
-    .trust-item strong {
-      display: block;
-      font-size: 16px;
-      margin-bottom: 6px;
-      color: white;
-    }
-
-    .mini-stat span,
-    .trust-item span {
-      display: block;
-      color: var(--text-light);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    .section-title {
-      margin-top: 22px;
-      margin-bottom: 10px;
-      font-size: 19px;
-      color: white;
-    }
-
-    .section-subtitle {
-      margin: 0 0 14px;
-      color: var(--text-light);
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .doc-list,
-    .plan-list {
-      display: grid;
-      gap: 12px;
-    }
-
-    .card,
-    .plan-card {
-      background: var(--surface);
-      color: var(--text);
-      padding: 16px;
-      border-radius: var(--radius-lg);
-      border: 1px solid transparent;
-      cursor: pointer;
-      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-      box-shadow: 0 10px 30px rgba(8, 15, 34, 0.08);
-    }
-
-    .card:hover,
-    .plan-card:hover,
-    .card:focus-visible,
-    .plan-card:focus-visible {
-      transform: translateY(-2px);
-      border-color: rgba(29, 78, 216, 0.22);
-      box-shadow: 0 18px 34px rgba(8, 15, 34, 0.12);
-      outline: none;
-    }
-
-    .card.selected,
-    .plan-card.selected {
-      border-color: var(--primary);
-      box-shadow: 0 16px 34px rgba(29, 78, 216, 0.18);
-    }
-
-    .plan-card.selected {
-      background: linear-gradient(180deg, #1e5be0 0%, #0f4ec9 100%);
-      border-color: #8db4ff;
-      box-shadow: 0 20px 38px rgba(15, 78, 201, 0.34);
-      color: white;
-    }
-
-    .plan-card.selected .plan-title,
-    .plan-card.selected .price,
-    .plan-card.selected .price-caption,
-    .plan-card.selected .plan-description,
-    .plan-card.selected .plan-benefits,
-    .plan-card.selected .benefit {
-      color: white;
-    }
-
-    .plan-card.selected .plan-tag {
-      background: rgba(255, 255, 255, 0.16);
-      color: white;
-    }
-
-    .plan-card.selected .featured-strip {
-      background: rgba(255, 255, 255, 0.14);
-      color: white;
-    }
-
-    .card-header,
-    .plan-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .card-title,
-    .plan-title {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .card-description,
-    .plan-description {
-      margin: 8px 0 0;
-      color: var(--text-muted);
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .card-tag,
-    .plan-tag {
-      flex-shrink: 0;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-    }
-
-    .card-tag {
-      background: var(--surface-soft);
-      color: var(--primary-dark);
-    }
-
-    .card-note {
-      display: block;
-      margin-top: 12px;
-      color: var(--primary-dark);
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .trust-section {
-      margin-top: 18px;
-      padding: 18px;
-      border-radius: 24px;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(244, 183, 64, 0.1));
-      border: 1px solid rgba(255, 255, 255, 0.11);
-    }
-
-    .trust-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    .panel {
-      margin-top: 18px;
-    }
-
-    label {
-      display: block;
-      margin-top: 14px;
-      margin-bottom: 8px;
-      color: white;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    input,
-    textarea {
-      width: 100%;
-      padding: 14px 15px;
-      border-radius: var(--radius-md);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      background: rgba(255, 255, 255, 0.98);
-      color: var(--text);
-      font-size: 15px;
-      font-family: inherit;
-    }
-
-    textarea {
-      min-height: 110px;
-      resize: vertical;
-    }
-
-    input:focus,
-    textarea:focus {
-      outline: 2px solid rgba(244, 183, 64, 0.55);
-      border-color: rgba(244, 183, 64, 0.55);
-    }
-
-    .step-copy {
-      margin-top: 10px;
-      margin-bottom: 4px;
-      color: var(--text-light);
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .plan-card {
-      position: relative;
-      overflow: hidden;
-      border: 1px solid rgba(15, 23, 42, 0.08);
-    }
-
-    .plan-card.featured {
-      border: 2px solid var(--gold);
-      background:
-        linear-gradient(180deg, rgba(255, 244, 216, 0.95), rgba(255, 255, 255, 1)),
-        var(--surface);
-      box-shadow: 0 18px 34px rgba(244, 183, 64, 0.2);
-    }
-
-    .plan-tag {
-      background: var(--surface-soft);
-      color: var(--primary-dark);
-    }
-
-    .plan-card.featured .plan-tag {
-      background: var(--gold);
-      color: #442b00;
-    }
-
-    .price-row {
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .price {
-      font-size: 30px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      color: var(--text);
-    }
-
-    .price-caption {
-      color: var(--text-muted);
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .plan-benefits {
-      margin-top: 14px;
-      color: var(--text-muted);
-      font-size: 13px;
-    }
-
-    .benefit {
-      display: flex;
-      gap: 8px;
-      align-items: flex-start;
-      line-height: 1.5;
-    }
-
-    .benefit::before {
-      content: "•";
-      color: var(--success);
-      font-weight: 900;
-    }
-
-    .featured-strip {
-      margin-top: 14px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: var(--gold-soft);
-      color: #6b4a00;
-      font-size: 13px;
-      font-weight: 700;
-      line-height: 1.5;
-    }
-
-    .small {
-      margin-top: 12px;
-      color: var(--text-light);
-      font-size: 12px;
-      line-height: 1.6;
-    }
-
-    button {
-      width: 100%;
-      padding: 15px 16px;
-      margin-top: 16px;
-      border-radius: 14px;
-      border: none;
-      font-size: 16px;
-      font-weight: 700;
-      font-family: inherit;
-      cursor: pointer;
-      transition: transform 0.18s ease, opacity 0.18s ease, box-shadow 0.18s ease;
-    }
-
-    button:hover,
-    button:focus-visible {
-      transform: translateY(-1px);
-      box-shadow: 0 14px 28px rgba(8, 15, 34, 0.2);
-      outline: none;
-    }
-
-    .primary {
-      background: linear-gradient(135deg, var(--gold), #ffcb65);
-      color: #1d1603;
-    }
-
-    .secondary {
+    .badge {
       background: rgba(255, 255, 255, 0.1);
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #dfe9f8;
+      border: 1px solid rgba(255, 255, 255, 0.12);
     }
 
-    .cta-note {
-      margin-top: 10px;
-      text-align: center;
-      color: var(--text-light);
-      font-size: 12px;
-      line-height: 1.6;
-    }
+    h1, h2, h3, h4 { margin: 0; }
+    h1 { margin-top: 18px; font-size: clamp(40px, 6vw, 66px); line-height: 0.98; letter-spacing: -0.04em; color: var(--navy-deep); }
+    h2 { font-size: clamp(28px, 4vw, 40px); line-height: 1.02; letter-spacing: -0.03em; color: var(--navy-deep); }
+    h3 { font-size: 22px; line-height: 1.1; color: var(--navy-deep); }
+    h4 { font-size: 18px; line-height: 1.2; color: var(--navy-deep); }
 
-    .success-box {
-      text-align: center;
-    }
-
-    .success-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      background: rgba(15, 159, 110, 0.18);
-      color: #7ef0c1;
-      font-size: 32px;
-      margin-bottom: 16px;
-    }
-
-    .success-text {
-      margin-top: 12px;
-      color: var(--text-light);
-      font-size: 14px;
+    .lead,
+    .section-head p,
+    .faq-item p,
+    .disclaimer-box,
+    .cta-strip,
+    .mini-note,
+    .footnote,
+    .success-note,
+    .form-kicker {
       line-height: 1.7;
     }
 
-    @media (max-width: 420px) {
-      .hero-points,
-      .trust-grid {
-        grid-template-columns: 1fr;
-      }
+    .lead { margin: 18px 0 0; font-size: 18px; color: var(--ink-soft); max-width: 62ch; }
+    .hero-actions { margin-top: 24px; }
+    .primary-btn { padding: 15px 24px; background: linear-gradient(135deg, var(--gold), #e2b766); color: #241404; box-shadow: 0 18px 32px rgba(200,148,57,0.28); }
+    .secondary-btn { padding: 15px 24px; background: white; color: var(--navy-deep); border: 1px solid rgba(17,32,51,0.1); }
+    .ghost-btn, .link-button { padding: 14px 18px; background: rgba(255,255,255,0.08); color: white; border: 1px solid rgba(255,255,255,0.16); }
 
-      h1 {
-        font-size: 30px;
-      }
+    .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
+    .kpi-grid, .proof-grid, .promise-grid { grid-template-columns: repeat(3, 1fr); }
+    .service-grid, .risk-grid, .pricing-grid, .faq-grid { grid-template-columns: repeat(2, 1fr); }
+
+    .hero-stat,
+    .kpi-card,
+    .service-card,
+    .risk-card,
+    .proof-card,
+    .promise-card,
+    .pricing-card,
+    .faq-item,
+    .assessment-card {
+      padding: 20px;
+      border-radius: var(--radius-lg);
+    }
+
+    .hero-stat { background: rgba(23,49,79,0.06); border: 1px solid rgba(23,49,79,0.09); }
+    .hero-stat strong, .kpi-card strong { display: block; font-size: 28px; line-height: 1; color: var(--navy-deep); }
+    .hero-stat span, .kpi-card span, .service-card span, .risk-card span, .proof-card span, .promise-card span { display: block; margin-top: 10px; color: var(--ink-soft); font-size: 14px; }
+
+    .hero-form h3,
+    .hero-form p,
+    .hero-form label,
+    .hero-form .mini-note,
+    .hero-form .consent-row,
+    .hero-form .disclaimer-box,
+    .hero-form .assessment-label,
+    .hero-form .footnote { color: white; }
+
+    .form-kicker { color: #bcd0ea; margin: 10px 0 0; font-size: 14px; }
+    form { margin-top: 18px; }
+
+    .field,
+    .full-field { margin-top: 14px; }
+    label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 700; }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 14px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(17, 32, 51, 0.14);
+      background: rgba(255, 255, 255, 0.98);
+      color: var(--ink);
+      font-size: 15px;
+    }
+
+    textarea { min-height: 112px; resize: vertical; }
+    input:focus, textarea:focus, select:focus { outline: 2px solid rgba(21,101,216,0.28); border-color: rgba(21,101,216,0.5); }
+    .consent-row { font-size: 13px; line-height: 1.6; color: #d6e5f8; }
+    .consent-row input { width: 18px; height: 18px; margin-top: 2px; flex-shrink: 0; }
+    .mini-note, .footnote { margin-top: 12px; color: #c8d8ee; font-size: 12px; }
+
+    .success-note {
+      display: none;
+      margin-top: 14px;
+      padding: 13px 14px;
+      border-radius: 14px;
+      background: rgba(22, 123, 93, 0.18);
+      border: 1px solid rgba(126, 240, 193, 0.24);
+      color: #dcfff1;
+      font-size: 14px;
+    }
+
+    .success-note.visible { display: block; }
+    .section { margin-top: 26px; }
+    .section-panel, .footer-panel { padding: 30px; }
+    .section-head p { max-width: 56ch; margin: 10px 0 0; color: var(--ink-soft); font-size: 15px; }
+
+    .assessment-card { background: linear-gradient(180deg, rgba(255,255,255,0.88), rgba(246,250,255,0.94)); }
+    .assessment-options { display: grid; gap: 12px; margin-top: 18px; }
+    .assessment-item { display: flex; gap: 12px; padding: 14px; border-radius: 16px; border: 1px solid rgba(17,32,51,0.1); background: white; align-items: flex-start; }
+    .assessment-item input { width: 18px; height: 18px; margin-top: 2px; }
+    .assessment-label { font-size: 14px; color: var(--ink); line-height: 1.6; font-weight: 600; }
+
+    .assessment-result {
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 18px;
+      display: none;
+      border: 1px solid transparent;
+    }
+
+    .assessment-result.visible { display: block; }
+    .assessment-result.low { background: var(--green-soft); border-color: rgba(22,123,93,0.15); }
+    .assessment-result.medium { background: #fff8e8; border-color: rgba(200,148,57,0.2); }
+    .assessment-result.high { background: var(--red-soft); border-color: rgba(188,59,37,0.18); }
+    .assessment-score { font-size: 32px; font-weight: 800; color: var(--navy-deep); }
+    .assessment-copy { margin-top: 10px; color: var(--ink-soft); line-height: 1.7; font-size: 14px; }
+
+    .service-card ul,
+    .pricing-card ul { margin: 14px 0 0; padding-left: 18px; }
+    .service-card li,
+    .pricing-card li { margin-top: 10px; color: var(--ink-soft); line-height: 1.6; font-size: 14px; font-family: "Segoe UI", Arial, sans-serif; }
+
+    .pricing-card { position: relative; overflow: hidden; }
+    .pricing-card.featured { background: linear-gradient(180deg, rgba(19,52,90,0.98), rgba(14,32,54,0.98)); color: white; border-color: rgba(21,101,216,0.18); }
+    .pricing-card.featured h3, .pricing-card.featured .price, .pricing-card.featured .price-caption, .pricing-card.featured li { color: white; }
+    .plan-chip { background: rgba(21,101,216,0.08); color: var(--blue); border: 1px solid rgba(21,101,216,0.14); }
+    .pricing-card.featured .plan-chip { background: rgba(255,255,255,0.1); color: #e7f0ff; border-color: rgba(255,255,255,0.16); }
+    .price { margin-top: 16px; font-size: 42px; line-height: 1; font-weight: 800; color: var(--navy-deep); }
+    .price-caption { margin-top: 8px; color: var(--ink-soft); font-size: 14px; }
+
+    .deliverable { margin-top: 16px; padding: 0; list-style: none; }
+    .deliverable li { position: relative; padding-left: 18px; margin-top: 12px; color: var(--ink-soft); line-height: 1.6; font-size: 14px; }
+    .deliverable li::before { content: "•"; position: absolute; left: 0; top: 0; color: var(--green); font-weight: 900; }
+    .pricing-card.featured .deliverable li::before { color: #ffd48a; }
+
+    .cta-strip,
+    .disclaimer-box {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      font-size: 14px;
+    }
+
+    .cta-strip { background: rgba(21,101,216,0.08); color: var(--ink); border: 1px solid rgba(21,101,216,0.12); }
+    .disclaimer-box { background: rgba(14,32,54,0.06); border: 1px solid rgba(14,32,54,0.08); color: var(--ink-soft); font-size: 13px; }
+    .faq-item p { margin: 12px 0 0; color: var(--ink-soft); font-size: 14px; }
+
+    .footer-panel {
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 24px;
+      background: linear-gradient(180deg, rgba(19,34,54,0.98), rgba(10,20,35,0.98));
+      color: white;
+    }
+
+    .footer-panel h3, .footer-panel p, .footer-panel li, .footer-panel .footnote, .footer-panel .brand-copy span, .footer-panel .brand-copy strong { color: white; }
+    .footer-panel .brand-copy span, .footer-panel .footnote, .footer-panel p, .footer-panel li { color: #c6d4e7; }
+    .footer-list { margin: 16px 0 0; padding-left: 18px; font-family: "Segoe UI", Arial, sans-serif; }
+    .footer-list li { margin-top: 10px; line-height: 1.6; font-size: 14px; }
+
+    @media (max-width: 980px) {
+      .hero,
+      .footer-panel,
+      .service-grid,
+      .risk-grid,
+      .pricing-grid,
+      .faq-grid,
+      .proof-grid,
+      .promise-grid,
+      .kpi-grid { grid-template-columns: 1fr; }
+      .hero-stats, .field-grid { grid-template-columns: 1fr; }
+      .topbar { border-radius: 28px; align-items: flex-start; flex-direction: column; }
+    }
+
+    @media (max-width: 640px) {
+      .shell { width: min(100%, calc(100% - 20px)); padding-top: 10px; }
+      .hero-copy, .hero-form, .section-panel, .footer-panel { padding: 22px 18px; }
+      h1 { font-size: 38px; }
+      .hero-actions { flex-direction: column; }
+      .primary-btn, .secondary-btn, .ghost-btn, .link-button { width: 100%; }
     }
   </style>
 </head>
-
 <body>
-  <div class="app-shell">
-    <div id="home">
-      <section class="hero">
-        <div class="eyebrow">Drafted by legal experts</div>
-        <h1>Affidavits that are fast, clear, and ready when you need them.</h1>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">CC</div>
+        <div class="brand-copy">
+          <strong>Counsel Connect Privacy</strong>
+          <span>DPDP compliance for Indian MSMEs</span>
+        </div>
+      </div>
+      <nav class="nav-links">
+        <a href="#why-now">Why now</a>
+        <a href="#services">Services</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+        <a class="nav-cta" href="#lead-form">Book a Readiness Call</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow">Built for founders, MSMEs, and high-growth teams</div>
+        <h1>DPDP compliance made practical, affordable, and audit-ready for Indian MSMEs.</h1>
         <p class="lead">
-          Pick your affidavit type, share your details, and get a professionally prepared draft without the back-and-forth.
+          We help small and medium businesses map data flows, clean up consent practices, create privacy-facing documents, and implement an operating system for DPDP readiness without buying an enterprise platform.
         </p>
+        <div class="hero-actions">
+          <a class="primary-btn" href="#lead-form">Get My DPDP Readiness Plan</a>
+          <a class="secondary-btn" href="#assessment">Check My Risk Score</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat"><strong>7 days</strong><span>to launch your first compliance cleanup sprint</span></div>
+          <div class="hero-stat"><strong>MSME-first</strong><span>designed for startups, clinics, e-commerce, SaaS, and service firms</span></div>
+          <div class="hero-stat"><strong>Practical</strong><span>policy, process, training, and evidence trail in one operating workflow</span></div>
+        </div>
+      </div>
 
-        <div class="hero-points">
-          <div class="mini-stat">
-            <strong>30 mins to 24 hrs</strong>
-            <span>Choose free, fast, or express drafting based on urgency.</span>
+      <div class="hero-form" id="lead-form">
+        <div class="eyebrow" style="background: rgba(255,255,255,0.1); color: #e8f0fc; border-color: rgba(255,255,255,0.12);">Free readiness call</div>
+        <h3 style="margin-top: 16px; color: white;">Book a 20-minute DPDP fit call</h3>
+        <p class="form-kicker">Tell us what your business collects, how urgent this is, and we will send you a tailored next-step plan.</p>
+        <div class="badge-row">
+          <div class="badge">No enterprise tooling needed</div>
+          <div class="badge">MSME pricing</div>
+          <div class="badge">Privacy-by-design workflow</div>
+        </div>
+
+        <form id="consultationForm">
+          <div class="field-grid">
+            <div class="field"><label for="fullName">Full name</label><input id="fullName" type="text" placeholder="Your name" /></div>
+            <div class="field"><label for="workEmail">Work email</label><input id="workEmail" type="email" placeholder="name@company.com" /></div>
+            <div class="field"><label for="phoneNumber">Phone number</label><input id="phoneNumber" type="tel" placeholder="Your phone number" /></div>
+            <div class="field"><label for="companyName">Company / brand</label><input id="companyName" type="text" placeholder="Business name" /></div>
+            <div class="field"><label for="industry">Industry</label>
+              <select id="industry">
+                <option value="">Select industry</option>
+                <option>Healthcare / Clinic</option>
+                <option>E-commerce</option>
+                <option>SaaS / Technology</option>
+                <option>Education / Edtech</option>
+                <option>Financial / Lending</option>
+                <option>Manufacturing / Distribution</option>
+                <option>Professional services</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="field"><label for="teamSize">Team size</label>
+              <select id="teamSize">
+                <option value="">Select team size</option>
+                <option>1-10</option>
+                <option>11-25</option>
+                <option>26-50</option>
+                <option>51-200</option>
+                <option>200+</option>
+              </select>
+            </div>
           </div>
-          <div class="mini-stat">
-            <strong>Simple process</strong>
-            <span>No complicated forms. Just submit key details in minutes.</span>
+
+          <div class="full-field">
+            <label for="dataTypes">What personal data do you handle?</label>
+            <textarea id="dataTypes" placeholder="Example: customer name, phone, email, employee records, health data, KYC documents, payment data"></textarea>
           </div>
-          <div class="mini-stat">
-            <strong>Human-reviewed</strong>
-            <span>Complex affidavit requests are routed to the legal team automatically.</span>
+
+          <div class="field-grid">
+            <div class="field"><label for="urgency">Urgency</label>
+              <select id="urgency">
+                <option value="">Select urgency</option>
+                <option>Need help this week</option>
+                <option>Need help this month</option>
+                <option>Planning phase</option>
+              </select>
+            </div>
+            <div class="field"><label for="serviceNeed">Primary need</label>
+              <select id="serviceNeed">
+                <option value="">Select need</option>
+                <option>DPDP gap assessment</option>
+                <option>Privacy policy + notices</option>
+                <option>Consent and cookie cleanup</option>
+                <option>Data retention and SOPs</option>
+                <option>Ongoing fractional DPO support</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="consent-row">
+            <input id="consentCheckbox" type="checkbox" />
+            <span>I consent to Counsel Connect Privacy collecting and using the information above to contact me about DPDP compliance services. I understand this is operational outreach, not legal representation or court advice.</span>
+          </div>
+
+          <button class="primary-btn" type="submit" style="width: 100%; margin-top: 16px;">Request My Readiness Plan</button>
+          <div class="mini-note">We only ask for business-contact details needed to respond. Sensitive data should not be submitted in this form.</div>
+          <div id="formSuccess" class="success-note">Your request has been received. We will review it and share the next-step readiness plan shortly.</div>
+        </form>
+      </div>
+    </section>
+
+    <section class="section" id="why-now">
+      <div class="section-panel">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Why this market</div>
+            <h2>The law is real, the confusion is real, and MSMEs still need a workable path.</h2>
+            <p>The opportunity is not to sell fear. It is to sell clarity, process discipline, and execution. Most smaller businesses do not need an enterprise privacy platform. They need a credible implementation partner who can help them move from chaos to evidence-backed readiness.</p>
           </div>
         </div>
 
-        <h3 class="section-title">Choose Your Affidavit</h3>
-        <p class="section-subtitle">Each draft is tailored to your purpose so you can move forward with confidence.</p>
+        <div class="kpi-grid">
+          <div class="kpi-card"><strong>Affordable</strong><span>Position around implementation and retained oversight, not giant software licenses or one-time legal PDFs with no operating workflow.</span></div>
+          <div class="kpi-card"><strong>Repeatable</strong><span>The same audit, register, consent, retention, training, and escalation framework can be adapted across industries with light tailoring.</span></div>
+          <div class="kpi-card"><strong>Sticky revenue</strong><span>Businesses that set up privacy controls need ongoing reviews, vendor checks, incident handling support, and periodic policy refreshes.</span></div>
+        </div>
 
-        <div class="doc-list">
-          <div class="card" data-doc="Address Proof Affidavit" onclick="selectDoc('Address Proof Affidavit')">
-            <div class="card-header">
-              <div class="card-title">Address Proof Affidavit</div>
-              <div class="card-tag">Popular</div>
-            </div>
-            <p class="card-description">Use this when you need a sworn declaration of residence for banks, institutions, KYC updates, or official verification.</p>
-            <span class="card-note">Best for address confirmation when standard proof is unavailable.</span>
-          </div>
+        <div class="cta-strip">Positioning logic: do not market this as “we make you fully compliant overnight.” Market it as “we help you implement a practical DPDP readiness system with documented controls, clear responsibilities, and priority-based remediation.” That is more credible, safer, and more sustainable.</div>
+      </div>
+    </section>
 
-          <div class="card" data-doc="Name Correction Affidavit" onclick="selectDoc('Name Correction Affidavit')">
-            <div class="card-header">
-              <div class="card-title">Name Correction Affidavit</div>
-              <div class="card-tag">High Demand</div>
-            </div>
-            <p class="card-description">Ideal for fixing spelling mistakes, name mismatches, or minor corrections across IDs, certificates, and records.</p>
-            <span class="card-note">Helps support updates in academic, bank, and identity documents.</span>
-          </div>
-
-          <div class="card" data-doc="Gap Year Affidavit" onclick="selectDoc('Gap Year Affidavit')">
-            <div class="card-header">
-              <div class="card-title">Gap Year Affidavit</div>
-              <div class="card-tag">Student Use</div>
-            </div>
-            <p class="card-description">Explain an education gap clearly for college admissions, study abroad applications, or professional verification.</p>
-            <span class="card-note">Useful when you need a formal explanation accepted by institutions.</span>
-          </div>
-
-          <div class="card" data-doc="Income Affidavit" onclick="selectDoc('Income Affidavit')">
-            <div class="card-header">
-              <div class="card-title">Income Affidavit</div>
-              <div class="card-tag">Common</div>
-            </div>
-            <p class="card-description">Declare income details for scholarships, government applications, fee concessions, or financial support documentation.</p>
-            <span class="card-note">Suitable for self-declared income statements where required.</span>
-          </div>
-
-          <div class="card" data-doc="Personalised Affidavit" onclick="selectDoc('Personalised Affidavit')">
-            <div class="card-header">
-              <div class="card-title">Personalised Affidavit</div>
-              <div class="card-tag">Custom</div>
-            </div>
-            <p class="card-description">Need something specific? Share your situation and our legal team will prepare a custom affidavit draft for your exact use case.</p>
-            <span class="card-note">Best for special-purpose declarations that do not fit standard categories.</span>
+    <section class="section" id="assessment">
+      <div class="section-panel">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Self assessment</div>
+            <h2>Check your DPDP readiness score in 30 seconds</h2>
+            <p>This quick score is a lead magnet and qualification tool. It helps visitors self-identify urgency while giving you a better sales conversation.</p>
           </div>
         </div>
 
-        <div class="trust-section">
-          <h3 class="section-title" style="margin-top:0;">Why people trust Counsel Connect</h3>
-          <div class="trust-grid">
-            <div class="trust-item">
-              <strong>Secure order capture</strong>
-              <span>Your request details are stored in Firebase so every order reaches the workflow reliably.</span>
-            </div>
-            <div class="trust-item">
-              <strong>Legal-first workflow</strong>
-              <span>Simple affidavit types can move faster, while special cases are routed for manual legal attention.</span>
-            </div>
-            <div class="trust-item">
-              <strong>Transparent pricing</strong>
-              <span>Start free, upgrade to priority processing when timing matters, and see the plan before you pay.</span>
-            </div>
-            <div class="trust-item">
-              <strong>WhatsApp follow-up</strong>
-              <span>After checkout, you can continue directly on WhatsApp for faster coordination and support.</span>
-            </div>
+        <div class="assessment-card">
+          <div class="assessment-options">
+            <label class="assessment-item"><input type="checkbox" class="risk-check" value="20" /><span class="assessment-label">We collect customer or employee personal data but do not maintain a current data inventory or record of where it is stored.</span></label>
+            <label class="assessment-item"><input type="checkbox" class="risk-check" value="20" /><span class="assessment-label">Our website, forms, CRM, WhatsApp, spreadsheets, or internal systems collect data without a clearly reviewed privacy notice or consent flow.</span></label>
+            <label class="assessment-item"><input type="checkbox" class="risk-check" value="20" /><span class="assessment-label">We have not defined who handles user complaints, correction requests, deletion requests, or breach escalation.</span></label>
+            <label class="assessment-item"><input type="checkbox" class="risk-check" value="20" /><span class="assessment-label">We use vendors, SaaS tools, HR systems, or agencies that access personal data, but we have not documented responsibilities or review steps.</span></label>
+            <label class="assessment-item"><input type="checkbox" class="risk-check" value="20" /><span class="assessment-label">Our team has never undergone a privacy or data-handling training session relevant to their role.</span></label>
+          </div>
+
+          <div class="hero-actions" style="margin-top: 20px;">
+            <button class="primary-btn" type="button" onclick="calculateRiskScore()">Calculate My Score</button>
+            <button class="secondary-btn" type="button" onclick="resetRiskScore()">Reset</button>
+          </div>
+
+          <div id="assessmentResult" class="assessment-result">
+            <div id="assessmentScore" class="assessment-score">0 / 100</div>
+            <div id="assessmentCopy" class="assessment-copy"></div>
           </div>
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
 
-    <div id="step1" style="display:none;">
-      <section class="panel">
-        <div class="eyebrow">Step 1 of 2</div>
-        <h2 id="docTitle"></h2>
-        <p class="step-copy">Share your contact details so we can prepare the right draft and keep you updated.</p>
-
-        <label for="name">Full Name</label>
-        <input id="name" placeholder="Enter your full name" />
-
-        <label for="phone">Phone Number</label>
-        <input id="phone" placeholder="Enter your phone number" />
-
-        <button class="primary" onclick="nextStep()">Continue</button>
-        <button class="secondary" onclick="goHome()">Back</button>
-      </section>
-    </div>
-
-    <div id="step2" style="display:none;">
-      <section class="panel">
-        <div class="eyebrow">Step 2 of 2</div>
-        <h2>Complete Your Details</h2>
-        <p class="step-copy">The more precise your details, the faster we can prepare the right affidavit draft.</p>
-
-        <label for="parent">Father/Mother Name</label>
-        <input id="parent" placeholder="Enter parent name" />
-
-        <label for="address">Full Address</label>
-        <input id="address" placeholder="Enter your full address" />
-
-        <label for="idproof">ID Proof</label>
-        <input id="idproof" placeholder="Example: Aadhaar / PAN / Passport" />
-
-        <label for="purpose">Purpose</label>
-        <input id="purpose" placeholder="Why do you need this affidavit?" />
-
-        <label for="additional">Additional Details</label>
-        <textarea id="additional" placeholder="Add any extra information that will help prepare the draft accurately"></textarea>
-
-        <h3 class="section-title">Choose Your Speed</h3>
-        <p class="section-subtitle">Most users pick the ₹99 plan for the best balance of price and turnaround.</p>
-
-        <div class="plan-list">
-          <div class="plan-card" id="plan-Free" onclick="selectPlan('Free')">
-            <div class="plan-header">
-              <div>
-                <div class="plan-title">Free</div>
-                <div class="price-row">
-                  <div class="price">₹0</div>
-                  <div class="price-caption">within 24 hrs</div>
-                </div>
-              </div>
-              <div class="plan-tag">Basic</div>
-            </div>
-            <p class="plan-description">Perfect if your affidavit is not urgent and you want to get started at no cost.</p>
-            <div class="plan-benefits">
-              <div class="benefit">Standard processing queue</div>
-              <div class="benefit">Best for non-urgent requests</div>
-            </div>
-          </div>
-
-          <div class="plan-card featured selected" id="plan-Fast" onclick="selectPlan('Fast')">
-            <div class="plan-header">
-              <div>
-                <div class="plan-title">Fast</div>
-                <div class="price-row">
-                  <div class="price">₹99</div>
-                  <div class="price-caption">within 2 hrs</div>
-                </div>
-              </div>
-              <div class="plan-tag">Recommended</div>
-            </div>
-            <p class="plan-description">The smartest choice if you want quick delivery without paying premium express pricing.</p>
-            <div class="plan-benefits">
-              <div class="benefit">Priority processing over free requests</div>
-              <div class="benefit">Best value for urgent same-day needs</div>
-              <div class="benefit">Most chosen plan by customers</div>
-            </div>
-            <div class="featured-strip">Best value: save time, skip the long queue, and get your draft much faster for just ₹99.</div>
-          </div>
-
-          <div class="plan-card" id="plan-Express" onclick="selectPlan('Express')">
-            <div class="plan-header">
-              <div>
-                <div class="plan-title">Express</div>
-                <div class="price-row">
-                  <div class="price">₹199</div>
-                  <div class="price-caption">within 30 mins</div>
-                </div>
-              </div>
-              <div class="plan-tag">Urgent</div>
-            </div>
-            <p class="plan-description">For last-minute needs when you want the fastest turnaround available today.</p>
-            <div class="plan-benefits">
-              <div class="benefit">Top priority handling</div>
-              <div class="benefit">Built for emergency timelines</div>
-            </div>
+    <section class="section" id="services">
+      <div class="section-panel">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Service design</div>
+            <h2>What the service should actually deliver</h2>
+            <p>Buyers trust operational clarity. Show exactly what happens, what they get, and how your service quality will feel in practice.</p>
           </div>
         </div>
 
-        <p class="small">Limited priority slots are available today. Select a plan before submitting your order.</p>
+        <div class="service-grid">
+          <div class="service-card"><h3>1. DPDP Gap Assessment</h3><span>Map data collection points, systems, vendors, internal responsibilities, and immediate exposure areas in language a founder can act on.</span><ul><li>Data flow and processing map</li><li>Risk-ranked remediation tracker</li><li>Role ownership matrix</li></ul></div>
+          <div class="service-card"><h3>2. Privacy Notice and Consent Layer</h3><span>Create practical front-end and internal language for websites, forms, apps, HR intake, and customer support channels.</span><ul><li>Website privacy notice</li><li>Lead and customer collection disclosures</li><li>Basic consent copy and channel mapping</li></ul></div>
+          <div class="service-card"><h3>3. Internal SOP Pack</h3><span>Convert compliance into repeatable operations so your client is not dependent on ad hoc founder memory.</span><ul><li>Request-handling SOP</li><li>Data retention checklist</li><li>Incident escalation workflow</li></ul></div>
+          <div class="service-card"><h3>4. Fractional DPO / Privacy Desk</h3><span>Offer retained oversight for policy refreshes, vendor reviews, complaints, and monthly privacy hygiene checks.</span><ul><li>Monthly check-in</li><li>Quarterly control review</li><li>Escalation support</li></ul></div>
+        </div>
+      </div>
+    </section>
 
-        <button class="primary" onclick="proceedPayment()">Get My Draft Now</button>
-        <button class="secondary" onclick="backToStepOne()">Back to Contact Details</button>
-        <div class="cta-note">Secure checkout for paid plans. Free plan requests are submitted instantly.</div>
-      </section>
-    </div>
+    <section class="section">
+      <div class="section-panel">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">SERVQUAL layer</div>
+            <h2>How to signal service quality before the first call</h2>
+            <p>Trust in compliance services is driven by responsiveness, assurance, empathy, reliability, and tangible outputs. The site should make all five visible.</p>
+          </div>
+        </div>
 
-    <div id="success" style="display:none;">
-      <section class="panel success-box">
-        <div class="success-badge">✓</div>
-        <h3 id="successMsg">Request Received</h3>
-        <p class="success-text">
-          Your order has been captured successfully. Continue on WhatsApp if you want quicker coordination with our team.
-        </p>
-        <button class="primary" onclick="openWhatsApp()">Continue on WhatsApp</button>
-      </section>
-    </div>
+        <div class="promise-grid">
+          <div class="promise-card"><h4>Responsiveness</h4><span>Promise a call-back window, an onboarding timeline, and a defined response SLA for active clients.</span></div>
+          <div class="promise-card"><h4>Assurance</h4><span>Use precise, compliance-safe wording. Say what you do. Do not claim guaranteed statutory compliance without review scope and assumptions.</span></div>
+          <div class="promise-card"><h4>Empathy</h4><span>Speak to small businesses in plain English. They are buying peace of mind, not jargon-heavy decks.</span></div>
+          <div class="promise-card"><h4>Reliability</h4><span>Show fixed deliverables, milestones, and recurring review schedules so the service feels durable.</span></div>
+          <div class="promise-card"><h4>Tangibles</h4><span>Always anchor your pitch to visible outputs: registers, SOPs, notices, training logs, risk tracker, vendor list, review calendar.</span></div>
+          <div class="promise-card"><h4>Commercial clarity</h4><span>Offer packages that are easy to compare and easy to upgrade, with a clear path from assessment to retainer.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-panel">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Risk framing</div>
+            <h2>What the site should warn about without sounding alarmist</h2>
+            <p>This section is about buyer urgency and trust. Good legal-tech marketing makes risk concrete but avoids misleading absolutes.</p>
+          </div>
+        </div>
+
+        <div class="risk-grid">
+          <div class="risk-card"><h3>Shadow data collection</h3><span>Personal data often lives across forms, shared drives, WhatsApp, spreadsheets, and SaaS tools with no single owner.</span></div>
+          <div class="risk-card"><h3>Policy without process</h3><span>A privacy policy alone does not help if deletion requests, complaints, retention, and escalation paths are undefined.</span></div>
+          <div class="risk-card"><h3>Vendor blind spots</h3><span>Agencies, CRMs, HRMS tools, analytics platforms, and outsourced support teams often create hidden compliance exposure.</span></div>
+          <div class="risk-card"><h3>Founder bottleneck</h3><span>When one founder informally manages everything, the business becomes fragile and non-repeatable under regulatory pressure.</span></div>
+        </div>
+
+        <div class="disclaimer-box">Compliance-safe language for the website: “We help businesses implement DPDP-aligned operational controls, documentation, and remediation workflows. Final legal positions, statutory interpretations, and representation should be reviewed with qualified legal counsel where required.”</div>
+      </div>
+    </section>
+
+    <section class="section" id="pricing">
+      <div class="section-panel">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Pricing logic</div>
+            <h2>Simple plans that lead naturally into recurring revenue</h2>
+            <p>Your packages should lower the buying barrier, create a clear upsell path, and preserve margin through standardized delivery.</p>
+          </div>
+        </div>
+
+        <div class="pricing-grid">
+          <div class="pricing-card"><div class="plan-chip">Entry offer</div><h3>Readiness Audit</h3><div class="price">₹14,999</div><div class="price-caption">Best for founders who need clarity, a gap map, and first-step remediation priorities.</div><ul class="deliverable"><li>One discovery call</li><li>Data processing map</li><li>Top-risk findings summary</li><li>30-day action checklist</li></ul></div>
+          <div class="pricing-card featured"><div class="plan-chip">Best positioned</div><h3>MSME Compliance Sprint</h3><div class="price">₹39,999</div><div class="price-caption">Strong offer for businesses that want both diagnosis and implementation support.</div><ul class="deliverable"><li>Gap assessment plus priority roadmap</li><li>Privacy notice and intake-copy refresh</li><li>Internal SOP pack</li><li>Basic training and escalation guidance</li><li>Implementation review call</li></ul></div>
+          <div class="pricing-card"><div class="plan-chip">Recurring</div><h3>Fractional Privacy Desk</h3><div class="price">₹2,500<span style="font-size:20px; font-family:'Segoe UI', Arial, sans-serif; font-weight:700;"> / month</span></div><div class="price-caption">For ongoing oversight, periodic cleanup, and a retained point of contact for privacy operations.</div><ul class="deliverable"><li>Monthly review touchpoint</li><li>Quarterly risk refresh</li><li>Vendor and process review support</li><li>Basic complaint and incident guidance</li></ul></div>
+          <div class="pricing-card"><div class="plan-chip">Higher ticket</div><h3>Multi-location or Sensitive Data Program</h3><div class="price">Custom</div><div class="price-caption">For healthcare, finance-adjacent, education, or businesses with multiple systems, teams, or branches.</div><ul class="deliverable"><li>Expanded system and vendor mapping</li><li>Role-based operating controls</li><li>Training framework</li><li>Custom implementation cadence</li></ul></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-panel">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Proof architecture</div>
+            <h2>What to show so the site converts without overclaiming</h2>
+            <p>Even before you build a portfolio, you can signal seriousness through process, evidence, and operational maturity.</p>
+          </div>
+        </div>
+
+        <div class="proof-grid">
+          <div class="proof-card"><h4>Implementation checklist</h4><span>Explain the exact journey from intake to audit map to remediation tracker to policy and SOP rollout.</span></div>
+          <div class="proof-card"><h4>Evidence-driven outputs</h4><span>Show the names of the documents and registers clients receive so the offer feels concrete and useful.</span></div>
+          <div class="proof-card"><h4>Specialist network</h4><span>State that legal interpretation, representation, and escalated reviews can be coordinated with qualified counsel where required.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq">
+      <div class="section-panel">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">FAQ</div>
+            <h2>Questions your buyer will ask before speaking to you</h2>
+          </div>
+        </div>
+
+        <div class="faq-grid">
+          <div class="faq-item"><h4>Do I need to be a lawyer to sell this service?</h4><p>No. A compliance implementation and privacy operations service can be run as a consulting business. However, legal interpretation, statutory opinions, and representation should be handled with qualified counsel where needed.</p></div>
+          <div class="faq-item"><h4>Can you guarantee full compliance?</h4><p>No credible provider should promise that in blanket terms. A stronger promise is to help implement a documented readiness program, close priority gaps, and improve operational accountability.</p></div>
+          <div class="faq-item"><h4>Why will MSMEs buy this?</h4><p>Because they cannot justify enterprise privacy platforms, yet they still need a practical path to policy, process, training, and evidence. You are selling managed clarity.</p></div>
+          <div class="faq-item"><h4>What creates recurring revenue here?</h4><p>Policy refreshes, quarterly reviews, complaint handling guidance, vendor checks, training updates, and incident response support naturally turn into retained work.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="footer-panel">
+        <div>
+          <div class="brand">
+            <div class="brand-mark">CC</div>
+            <div class="brand-copy">
+              <strong>Counsel Connect Privacy</strong>
+              <span>Operational privacy systems for Indian MSMEs</span>
+            </div>
+          </div>
+
+          <p style="margin-top: 18px; line-height: 1.8; max-width: 58ch; font-family: 'Segoe UI', Arial, sans-serif;">This site is designed as a lead-generation and trust-building front end for a DPDP compliance implementation business. It focuses on practical remediation, service quality, and compliance-safe positioning instead of legal overclaiming.</p>
+
+          <ul class="footer-list">
+            <li>Use this page to capture founders, operators, and SME decision-makers.</li>
+            <li>Store only business-contact information you actually need for outreach.</li>
+            <li>Do not ask for sensitive personal data in the lead form.</li>
+            <li>Pair implementation services with qualified legal review where necessary.</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 style="color: white;">Compliance notes for your own business</h3>
+          <ul class="footer-list">
+            <li>Publish your own privacy notice before running ads or collecting leads.</li>
+            <li>Keep consultation outreach tied to explicit consent or operational follow-up.</li>
+            <li>Maintain lead-source tracking, retention rules, and access control for customer data.</li>
+            <li>Use service agreements and scoped deliverables for every engagement.</li>
+          </ul>
+          <div class="footnote">Suggested positioning line: “Counsel Connect Privacy helps businesses implement DPDP-aligned privacy operations, documentation, and remediation workflows. This is not a substitute for matter-specific legal representation.”</div>
+        </div>
+      </div>
+    </section>
   </div>
 
   <script>
-    let docType = "";
-    let plan = "Fast";
-    const numbers = ["919599413556", "919873299521"];
-    const planIds = ["Free", "Fast", "Express"];
-    const homeSection = document.getElementById("home");
-    const stepOneSection = document.getElementById("step1");
-    const stepTwoSection = document.getElementById("step2");
-    const successSection = document.getElementById("success");
-    const docTitleEl = document.getElementById("docTitle");
-    const successMsgEl = document.getElementById("successMsg");
-    const nameInput = document.getElementById("name");
-    const phoneInput = document.getElementById("phone");
-    const parentInput = document.getElementById("parent");
-    const addressInput = document.getElementById("address");
-    const idProofInput = document.getElementById("idproof");
-    const purposeInput = document.getElementById("purpose");
-    const additionalInput = document.getElementById("additional");
-    const razorpayKey = "YOUR_RAZORPAY_KEY";
+    const consultationForm = document.getElementById("consultationForm");
+    const formSuccess = document.getElementById("formSuccess");
+    const consentCheckbox = document.getElementById("consentCheckbox");
+    const riskChecks = Array.from(document.querySelectorAll(".risk-check"));
+    const assessmentResult = document.getElementById("assessmentResult");
+    const assessmentScore = document.getElementById("assessmentScore");
+    const assessmentCopy = document.getElementById("assessmentCopy");
 
-    const affidavitTemplates = {
-      "Address Proof Affidavit": {
-        title: "AFFIDAVIT FOR ADDRESS PROOF",
-        declarations: [
-          "I am presently residing at the address stated below and I have been using the said address for correspondence and identification purposes.",
-          "I am submitting this affidavit as proof of residence for the purpose mentioned herein.",
-          "The facts stated in this affidavit are true and correct to the best of my knowledge and belief."
-        ]
-      },
-      "Name Correction Affidavit": {
-        title: "AFFIDAVIT FOR NAME CORRECTION",
-        declarations: [
-          "My name has been recorded incorrectly in one or more documents and I seek correction of the same.",
-          "The correct name to be used for all official purposes is the name stated in this affidavit.",
-          "Both the incorrect entry and the corrected name refer to one and the same person, namely myself."
-        ]
-      },
-      "Gap Year Affidavit": {
-        title: "AFFIDAVIT FOR GAP YEAR / STUDY BREAK",
-        declarations: [
-          "There was a gap in my academic course / studies during the period relevant to the purpose stated below.",
-          "The break occurred due to personal, financial, medical, or other bona fide reasons as explained in this affidavit.",
-          "I affirm that the information given herein is true and is being submitted to the concerned authority for consideration."
-        ]
-      },
-      "Income Affidavit": {
-        title: "AFFIDAVIT OF INCOME",
-        declarations: [
-          "I state that my income details are as declared in this affidavit for the purpose mentioned below.",
-          "This declaration is being made for submission before the concerned authority / institution requesting proof of income.",
-          "The statements made herein are true, complete, and based on my personal knowledge."
-        ]
-      },
-      "Personalised Affidavit": {
-        title: "CUSTOM AFFIDAVIT",
-        declarations: [
-          "This affidavit is being prepared based on the specific facts and instructions provided by the applicant.",
-          "The purpose and declarations are tailored to the customer's individual use case and supporting details.",
-          "The final draft should be reviewed against the exact authority requirements before submission."
-        ]
-      }
-    };
-
-    function setSelectedCard(selector, value, attributeName) {
-      document.querySelectorAll(selector).forEach((card) => {
-        const matches = card.getAttribute(attributeName) === value;
-        card.classList.toggle("selected", matches);
-      });
+    function getFieldValue(id) {
+      return document.getElementById(id).value.trim();
     }
 
-    function goHome() {
-      stepOneSection.style.display = "none";
-      stepTwoSection.style.display = "none";
-      successSection.style.display = "none";
-      homeSection.style.display = "block";
-    }
+    function validateConsultationForm() {
+      const requiredIds = ["fullName", "workEmail", "phoneNumber", "companyName", "industry", "teamSize", "dataTypes", "urgency", "serviceNeed"];
+      const missing = requiredIds.some((id) => !getFieldValue(id));
 
-    function selectDoc(type) {
-      docType = type;
-      setSelectedCard(".card[data-doc]", type, "data-doc");
-      homeSection.style.display = "none";
-      stepOneSection.style.display = "block";
-      stepTwoSection.style.display = "none";
-      successSection.style.display = "none";
-      docTitleEl.innerText = type;
-    }
-
-    function nextStep() {
-      if (!validateStepOne()) {
-        return;
+      if (missing) {
+        alert("Please complete all consultation fields before submitting.");
+        return false;
       }
 
-      stepOneSection.style.display = "none";
-      stepTwoSection.style.display = "block";
-      selectPlan(plan);
-    }
-
-    function backToStepOne() {
-      stepTwoSection.style.display = "none";
-      stepOneSection.style.display = "block";
-    }
-
-    function selectPlan(p) {
-      plan = p;
-
-      planIds.forEach((id) => {
-        const card = document.getElementById("plan-" + id);
-        if (card) {
-          card.classList.toggle("selected", id === p);
-        }
-      });
-    }
-
-    function classifyRequest(data) {
-      if (plan === "Express") return "MANUAL";
-      if (data.additional.length > 120) return "MANUAL";
-      if (data.document === "Personalised Affidavit") return "MANUAL";
-
-      if (
-        data.document === "Address Proof Affidavit" ||
-        data.document === "Gap Year Affidavit" ||
-        data.document === "Income Affidavit"
-      ) {
-        return "AUTO";
-      }
-
-      return "MANUAL";
-    }
-
-    function validateStepOne() {
-      if (!nameInput.value.trim() || !phoneInput.value.trim()) {
-        alert("Please enter your full name and phone number.");
+      if (!consentCheckbox.checked) {
+        alert("Please provide consent so we can contact you about the consultation request.");
         return false;
       }
 
       return true;
     }
 
-    function validateStepTwo() {
-      if (!parentInput.value.trim() || !addressInput.value.trim() || !idProofInput.value.trim() || !purposeInput.value.trim()) {
-        alert("Please complete all required affidavit details before continuing.");
-        return false;
-      }
+    consultationForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!validateConsultationForm()) return;
 
-      return true;
-    }
-
-    function proceedPayment() {
-      if (!validateStepOne() || !validateStepTwo()) {
-        return;
-      }
-
-      if (plan === "Free") {
-        saveData("Free");
-        return;
-      }
-
-      if (razorpayKey === "YOUR_RAZORPAY_KEY") {
-        alert("Add your Razorpay key in the code to enable payment checkout for paid plans.");
-        return;
-      }
-
-      const amount = plan === "Fast" ? 9900 : 19900;
-
-      const options = {
-        key: razorpayKey,
-        amount: amount,
-        currency: "INR",
-        name: "Counsel Connect",
-        description: `${docType} - ${plan}`,
-        prefill: {
-          name: nameInput.value,
-          contact: phoneInput.value
-        },
-        notes: {
-          document: docType,
-          purpose: purposeInput.value
-        },
-        handler: function () {
-          saveData("Paid");
-        }
+      const payload = {
+        fullName: getFieldValue("fullName"),
+        workEmail: getFieldValue("workEmail"),
+        phoneNumber: getFieldValue("phoneNumber"),
+        companyName: getFieldValue("companyName"),
+        industry: getFieldValue("industry"),
+        teamSize: getFieldValue("teamSize"),
+        dataTypes: getFieldValue("dataTypes"),
+        urgency: getFieldValue("urgency"),
+        serviceNeed: getFieldValue("serviceNeed"),
+        consentToContact: consentCheckbox.checked,
+        source: "dpdp-landing-page",
+        readinessScore: calculateScoreOnly(),
+        createdAt: window.serverTimestamp ? window.serverTimestamp() : new Date()
       };
 
-      new Razorpay(options).open();
+      try {
+        await window.addDoc(window.collection(window.db, "dpdpLeads"), payload);
+        formSuccess.classList.add("visible");
+        consultationForm.reset();
+      } catch (error) {
+        alert("Something went wrong while saving your request. Please try again.");
+      }
+    });
+
+    function calculateScoreOnly() {
+      return riskChecks.reduce((total, checkbox) => total + (checkbox.checked ? Number(checkbox.value) : 0), 0);
     }
 
-    function buildAffidavitText(data) {
-      const template = affidavitTemplates[data.document] || affidavitTemplates["Personalised Affidavit"];
-      const declarationLines = template.declarations.map((line, index) => `${index + 1}. ${line}`).join("\n\n");
-      const customContext = data.additional.trim() ? `\nAdditional customer context:\n${data.additional.trim()}\n` : "";
+    function calculateRiskScore() {
+      const score = calculateScoreOnly();
+      assessmentResult.classList.add("visible");
+      assessmentResult.classList.remove("low", "medium", "high");
+      assessmentScore.textContent = `${score} / 100`;
 
-      return `${template.title}
-
-I, ${data.name}, child of ${data.parent}, residing at ${data.address}, do hereby solemnly affirm and declare as under:
-
-${declarationLines}
-
-Document Type:
-${data.document}
-
-ID Proof Submitted:
-${data.idproof}
-
-Purpose of Affidavit:
-${data.purpose}
-${customContext}
-Verification:
-I verify that the contents of this affidavit are true and correct to the best of my knowledge and belief and nothing material has been concealed therefrom.
-
-Place: __________________
-Date: ___________________
-
-Deponent Signature:
-_______________________`;
+      if (score <= 20) {
+        assessmentResult.classList.add("low");
+        assessmentCopy.textContent = "Your current risk appears lower than many MSMEs, but you should still document your data map, notices, and response process before scale creates hidden gaps.";
+      } else if (score <= 60) {
+        assessmentResult.classList.add("medium");
+        assessmentCopy.textContent = "You likely have material DPDP readiness gaps across notice, process ownership, or operational controls. A focused audit-and-remediation sprint is the right next step.";
+      } else {
+        assessmentResult.classList.add("high");
+        assessmentCopy.textContent = "Your business likely has significant exposure because data handling is active but controls are not yet operationalized. You should prioritize a structured remediation program immediately.";
+      }
     }
 
-    function generatePDF(data) {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      const content = buildAffidavitText(data);
-      const lines = doc.splitTextToSize(content, 180);
-
-      doc.setFont("times", "normal");
-      doc.setFontSize(12);
-      doc.text(lines, 15, 20);
-      doc.save("CounselConnect_Affidavit.pdf");
-    }
-
-    function saveData(status) {
-      const draftData = {
-        name: nameInput.value,
-        phone: phoneInput.value,
-        parent: parentInput.value,
-        address: addressInput.value,
-        idproof: idProofInput.value,
-        purpose: purposeInput.value,
-        additional: additionalInput.value,
-        document: docType,
-        plan: plan
-      };
-
-      const data = {
-        ...draftData,
-        paymentStatus: status,
-        templateTitle: (affidavitTemplates[docType] || affidavitTemplates["Personalised Affidavit"]).title,
-        draftText: buildAffidavitText(draftData),
-        createdAt: new Date()
-      };
-
-      const type = classifyRequest(data);
-
-      addDoc(collection(window.db, "orders"), {
-        ...data,
-        processingType: type
-      }).then(() => {
-        if (type === "AUTO") {
-          generatePDF(data);
-          successMsgEl.innerText = "Your affidavit draft is ready!";
-        } else {
-          successMsgEl.innerText = "Our legal team will prepare your affidavit shortly.";
-        }
-
-        stepTwoSection.style.display = "none";
-        successSection.style.display = "block";
+    function resetRiskScore() {
+      riskChecks.forEach((checkbox) => {
+        checkbox.checked = false;
       });
-    }
-
-    function openWhatsApp() {
-      const num = numbers[Math.floor(Math.random() * numbers.length)];
-
-      const message = `New Order:
-Name: ${nameInput.value}
-Document: ${docType}
-Plan: ${plan}`;
-
-      window.open(`https://wa.me/${num}?text=${encodeURIComponent(message)}`);
+      assessmentResult.classList.remove("visible", "low", "medium", "high");
+      assessmentScore.textContent = "0 / 100";
+      assessmentCopy.textContent = "";
     }
   </script>
 </body>
